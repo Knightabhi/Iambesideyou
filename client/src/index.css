@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  font: Proxima Nova;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f8f6fa !important;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.row {
+  flex-wrap: nowrap !important;
+}
