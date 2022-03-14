@@ -151,6 +151,7 @@ export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSignup, setIsSignup] = useState(true);
   const [formData, setFormData] = useState(initialState);
+  const [wrong,setWrong]=useState(false);
   let history = useHistory();
   const handleShowPassword = () =>
     setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -163,25 +164,35 @@ export default function Home() {
         .signIn(formData)
         .then((res) => {
           console.log(res);
-          localStorage.setItem("name",res.data.result.name);
+          localStorage.setItem("jwt",res.data.token);
+          localStorage.setItem("id",res.data.result._id);
           history.push("/next");
         })
         .catch((error) => {
           console.log(error);
         });
     } else {
+      if(formData.password===formData.confirmPassword)
+      {
       await api
         .signUp(formData)
         .then((res) => {
           console.log(res);
-          localStorage.setItem("name",res.data.result.name);
+          localStorage.setItem("jwt",res.data.token);
+          localStorage.setItem("id",res.data.result._id);
           history.push("/next");
         })
         .catch((error) => {
           console.log(error);
         });
+      } else{
+        wrongMatch();
+      }
     }
   };
+  function wrongMatch(){
+    alert("Password mismatch");
+  }
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };

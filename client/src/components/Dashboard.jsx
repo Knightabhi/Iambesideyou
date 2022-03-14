@@ -100,7 +100,8 @@ function Dashboard() {
   // });
   let history = useHistory();
   const handleLogOut=()=>{
-    localStorage.removeItem("name");
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("id");
     history.replace("/");
   }
   const classes = useStyles();

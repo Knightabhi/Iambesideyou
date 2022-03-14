@@ -1,6 +1,8 @@
 import React, { useEffect, useState,useRef } from 'react';
 import * as faceApi from "face-api.js";
+import * as api from "../api/index";
 import { makeStyles } from "@material-ui/core/styles";
+import { useHistory} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
    video:{
@@ -35,19 +37,32 @@ const useStyles = makeStyles((theme) => ({
 function AI() {
 	const [playing, setPlaying] = useState(false);
   const [disabled,setDisabled] =useState(false);
+  const [user,setUser]=useState(null);
   const videoRef= useRef();
+  let history = useHistory();
   const canvasRef=useRef();
-  useEffect(()=>{
-    if(localStorage.getItem("name")===null)
-    {
-      setPlaying(false);
-    }
-  },[])
 	const HEIGHT = 600;
 	const WIDTH = 600;
 
   useEffect(()=>{
+
     const LoadModels= async()=>{
+      console.log(localStorage.getItem("id"));
+      console.log(localStorage.getItem("jwt"));
+      if(localStorage.getItem("id")===null)
+      {
+        setPlaying(false);
+      }
+      else
+      {
+        await api.getUser(localStorage.getItem("id"))
+        .then((res) => {
+            setUser(res.data);
+        })
+        .catch((error) => {
+            history.push("/")
+        });
+      }
       const Model_URL=process.env.PUBLIC_URL+'/models';
       await Promise.all([
         faceApi.nets.tinyFaceDetector.loadFromUri(Model_URL),
@@ -67,24 +82,26 @@ function AI() {
   },[]);
 
   const startVideo = async() => {
-    console.log("yes");
     navigator.mediaDevices.getUserMedia({ video: true })
   .then((stream) => {
+    if(stream!==null)
+    {
     videoRef.current.srcObject = stream;
     setPlaying(true);
+    }
   });
   };
 
 	const stopVideo = () => {
 		setPlaying(false);
-    navigator.getUserMedia({audio: false, video: true},
-      function(stream) {
-          var track = stream.getTracks()[0];
-          track.stop();
-      },
-      function(error){
-          console.log('getUserMedia() error', error);
-      });
+    // navigator.getUserMedia({audio: false, video: true},
+    //   function(stream) {
+    //       var track = stream.getTracks()[0];
+    //       track.stop();
+    //   },
+    //   function(error){
+    //       console.log('getUserMedia() error', error);
+    //   });
       videoRef.current.srcObject = null;
 	};
  
@@ -122,7 +139,7 @@ function AI() {
         }
         {disabled&&!playing&&
           <div className={classes.loader}>
-           How is your mood today.....
+           How is your mood today.....{user}&nbsp;&nbsp;
            Lets find out
           </div>
         }
