@@ -22,10 +22,7 @@ export const signin = async (req, res) => {
       "test",
       { expiresIn: "1h" }
     );
-    const result={
-      name:existingUser.name
-    }
-    res.status(200).json({ result: result, token });
+    res.status(200).json({ result: existingUser, token });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong." });
   }
@@ -59,3 +56,15 @@ export const signup = async (req, res) => {
     console.log(error);
   }
 };
+
+export const getUser = async(req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+
+    res.status(200).json(user.name);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+}
